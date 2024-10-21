@@ -3,20 +3,36 @@ This is a README file with instructions on how to run the software associated wi
 # System requirements
 Software dependencies: Please see the "python environments" folder for version numbers of all packages associated with the Python environments used to run the REBOUND and REBOUNDx simulations. Generally, the software runs on Python 3.8 or higher, and requires installation of the batman, isochrones, and REBOUND/REBOUNDx packages.
 
+This software has been tested on Linux and MacOS Monterey 12.5 operating systems. Using a Linux environment or HPC is preferred.
+
 There is no non-standard hardware required, although this code can make use of multiprocessing.
 
 # Installation Guide
 1. Install Dependencies
-   [will put install links here]
-2. Set up Python environment
+   - [batman](https://lkreidberg.github.io/batman/docs/html/installation.html)
+   - [Corner](https://corner.readthedocs.io/en/latest/install/)
+   - [Emcee](https://emcee.readthedocs.io/en/stable/user/install/)
+   - [MultiNest](https://github.com/JohannesBuchner/MultiNest)
+   - [Isochrones](https://isochrones.readthedocs.io/en/latest/install.html)
+   - [Astroquery](https://astroquery.readthedocs.io/en/latest/#installation)
+   - [REBOUND](https://rebound.readthedocs.io/en/latest/quickstart_installation/)
+   - [REBOUNDx](https://reboundx.readthedocs.io/en/latest/python_quickstart.html)
+3. Set up Python environment
    Define the python environments using those listed in the "python environments" folder.
-3. [insert export expression]
+4. Load environments. The transit fit MCMC requires MultiNest, which must be loaded before running the script (copy/paste the code block below, and modify the path locations).
+   ```
+   module load multinest
+   export PATH=/path/to/py38/bin/:$PATH
+   export PYTHONPATH=/path/to/envs/py38/lib/python3.8/site-packages/:$PYTHONPATH
+
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/.local/lib
+   ```
 
 Typical install time: 30 minutes.
 
 # Demo
 To use this software on data, download the code and the relevant config ("prior") files. Once the dependencies are installed, simply run the python scripts in the following order:
-  1. Batman light curve MCMC
+  1. Batman light curve MCMC, 'multiplanet_fitting_script.py' (this requires an extra argument for the name of the prior file you are using)
   2. REBOUND grid search (must have an extra argument for the resonance you're probing, in the format '21' for 2:1, '12' for 1:2, etc.)
   3. REBOUND MCMC
   4. REBOUND integration/stability check
@@ -26,3 +42,6 @@ The expected outputs are .txt or .csv files with (1) best-fit transit centers at
 On a "normal" desktop computer, this demo may take several days. The integrations and MCMC algorithms are computationally expensive, especially without multiprocessing.
 
 # Instructions for Use
+To run the software on data, please follow the steps outlined above. 
+
+The definitions for each file and its functionality are as follows:
