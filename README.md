@@ -45,3 +45,15 @@ On a "normal" desktop computer, this demo may take several days. The integration
 To run the software on data, please follow the steps outlined above. 
 
 The definitions for each file and its functionality are as follows:
+
+- 'bestfit_plotting.py': compiles the best-fit light curve parameters after the light curve MCMC.
+- 'bestfit_tdv_Jul17nobias.csv': CSV with best-fit parameters from the REBOUND TTV/TDV joint fit.
+- 'fit_individual_transit.py': light curve MCMC where the transit durations are left as a free parameter (used in auxiliary light curve analysis).
+- 'gridsearch_rebound_ttv.py': REBOUND grid search code that produces optimal starting points for the REBOUND MCMC (this must be initialized at a specific resonance)
+- 'KOI134_seg.csv': the Kepler light curve file for KOI-134.
+- 'koi134_prior_notdvs.csv': input CSV for main light curve MCMC fit.
+- 'multiplanet_fitting_script.py': script for main light curve MCMC fit.
+- 'rebound_int_gr.py': REBOUNDx integration code, which takes into account General Relativity effects.
+- 'rebound_mcmc_tdv_v5_nob_ias.py': script for REBOUND TTV/TDV joint fit.
+- 'transitduration_fit.csv': CSV with best-fit transit durations.
+- 'transittime3.csv': CSV of initial estimates for transit centers, which is used as an input for the light curve MCMC analyses.
