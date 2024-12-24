@@ -16,9 +16,11 @@ timingfile = pd.read_csv("transittime3.csv")
 epochs = np.array(timingfile["epoch"])
 t0s = np.array(timingfile["time"])
 t0_errs = np.array(timingfile["err"])
+
+#def trend(x, y):
     
 
-def batman_model(time, t0, p, tdur, rprs, mstar, rstar, q1, q2):
+def batman_model(time, t0, p, tdur, rprs, mstar, rstar, q1, q2, epoch):
     
     aAU = mstar**(1/3)*(p/365.25)**(2/3)  #a in AU
     aors = aAU*215/rstar                  #a over r_star
@@ -40,15 +42,18 @@ def batman_model(time, t0, p, tdur, rprs, mstar, rstar, q1, q2):
     params.u = [u1,u2]                                          #limb darkening coefficients [u1, u2]
     params.limb_dark = "quadratic"                              #limb darkening model
 
-    m = batman.TransitModel(params, time)                       #initializes model
+    if epoch<3 or epoch>9:
+        m = batman.TransitModel(params, time, supersample_factor=10, exp_time=29.4/60./24.)                       #initializes model
+    else:
+        m = batman.TransitModel(params, time, supersample_factor=3, exp_time=58.8/3600./24.)                       #initializes model
     flux = m.light_curve(params)
     return flux
 
 
-def log_likelihood(theta, time, flux, error):
+def log_likelihood(theta, time, flux, error, epoch):
 
     t0, p, tdur, rprs, mstar, rstar, q1, q2 = theta
-    model = batman_model(time, t0, p, tdur, rprs, mstar, rstar, q1, q2)
+    model = batman_model(time, t0, p, tdur, rprs, mstar, rstar, q1, q2, epoch)
     res = flux-model
     z = np.polyfit(time, res, 3)
     trend = np.poly1d(z)(time)
@@ -71,17 +76,24 @@ def log_prior(theta, freeparams, priors):
         if not key.endswith("err"):
             log_prior+=-0.5*(paramdic[key]-priors[key])**2./priors[key+"_err"]**2.
     
+
+    #print('theta=',theta)
+    #print('freeparams=',freeparams)
     
     return log_prior
  
 ####### Log Probability #######
 
-def log_probability(theta, freeparams, time, flux, error, priors):
+def log_probability(theta, freeparams, time, flux, error, priors, epoch):
     lp = log_prior(theta, freeparams, priors)
     if not np.isfinite(lp):
         return -np.inf
-    probability = lp + log_likelihood(theta,time, flux, error)
-
+    probability = lp + log_likelihood(theta,time, flux, error, epoch)
+    #debugline = ''
+    #for i in range(len(theta)):
+    #    debugline+="%f," % theta[i]
+    #debugline+="%f,%f" % (lp, probability)
+    #print(debugline) 
     return probability
 
 
@@ -102,6 +114,7 @@ if __name__ == '__main__':
     priors_dic["rprs"] = 0.06646
     priors_dic["rprs_err"] = 0.0004
     for i in range(len(epochs)):
+        epoch = epochs[i]
         t0 = t0s[i]
         priors_dic["t0"] = t0
         priors_dic["t0_err"] = t0_errs[i]
@@ -117,16 +130,17 @@ if __name__ == '__main__':
         spread_arr = [0.001, 0.001, 1.0, 0.001, 0.01, 0.01, 0.05, 0.05]
         for j in range(nwalkers):
             pos_i = theta + spread_arr * np.random.randn(ndim)		   #different spread for each parameter
-            prob = log_probability(pos_i, freeparams, time, flux, error, priors_dic)
+            prob = log_probability(pos_i, freeparams, time, flux, error, priors_dic, epoch)
             while not np.isfinite(prob):
                 pos_i = theta + spread_arr * np.random.randn(ndim)
-                prob = log_probability(pos_i, freeparams, time, flux, error, priors_dic)     
+                prob = log_probability(pos_i, freeparams, time, flux, error, priors_dic, epoch)     
             pos.append(pos_i)
  
 
+        #log_probability(theta, freeparams, time, flux, error, priors_dic)
         with Pool(processes=5) as pool:
             max_n = 75000
-            sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability, args=(freeparams, time, flux, error, priors_dic),pool=pool)
+            sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability, args=(freeparams, time, flux, error, priors_dic, epoch),pool=pool)
             master_pos = np.ones([100*nwalkers,ndim+1])
             counter = 0
                 
@@ -134,6 +148,9 @@ if __name__ == '__main__':
                 position = sample.coords
                 probability=sample.log_prob
                 
+                #print(len(position))
+                #print(master_pos.shape)
+                #print(len(probability))
                 for k in range(len(position)):
                     master_pos[counter] = np.array(list(position[k])+[probability[k]])
                     counter += 1
