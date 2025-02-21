@@ -18,8 +18,8 @@ filename = str(sys.argv[1])								#name for final file results will be saved to
 pratio_name = str(sys.argv[2])
 
 
-stellar_mass = 1.413524
-stellar_radius = 1.727299
+stellar_mass = 1.406714
+stellar_radius = 1.667065
 Mjup_Msun= 0.000954588
 
 # inclination of the transiting planet (take from the transit fit)
