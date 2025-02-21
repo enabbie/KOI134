@@ -7,8 +7,8 @@ import pandas as pd
 #need reboundx 4.0.0
 #need rebound 4.4.2
 
-stellar_mass = 1.413524
-stellar_radius = 1.727299
+stellar_mass = 1.406714
+stellar_radius = 1.667065
 
 Mjup_Msun= 0.000954588
 sim = rebound.Simulation()
