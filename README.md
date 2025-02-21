@@ -51,7 +51,8 @@ The definitions for each file and its functionality are as follows:
 - `fit_individual_transit.py`: light curve MCMC where the transit durations are left as a free parameter (used in auxiliary light curve analysis).
 - `gridsearch_rebound_ttv.py`: REBOUND grid search code that produces optimal starting points for the REBOUND MCMC (this must be initialized at a specific resonance)
 - `KOI134_seg.csv`: the Kepler light curve file for KOI-134.
-- `koi134_prior_notdvs.csv`: input CSV for main light curve MCMC fit.
+- `koi134_prior_noerrscale.csv`: input CSV for main light curve MCMC fit (no stellar error scaling term).
+- `koi134_prior_notdvs.csv`: input CSV for alternate light curve MCMC fit (includes stellar error scaling term).
 - `multiplanet_fitting_script.py`: script for main light curve MCMC fit.
 - `rebound_int_gr.py`: REBOUNDx integration code, which takes into account General Relativity effects.
 - `rebound_mcmc_tdv_v5_nob_ias.py`: script for REBOUND TTV/TDV joint fit.
